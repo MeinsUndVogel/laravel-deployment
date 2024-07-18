@@ -8,9 +8,12 @@ use Illuminate\Support\Str;
 class GitDeployController
 {
     /**
-     * Überprüft, ob der Webhook von Github kommt (ob der Hash stimmt) und ob es sich um den "richtigen" Branch handelt.
-     * Wenn ja, wird die Semaphor-Datei geschrieben, die dazu führt, dass der cron-Job (und damit das Deployment)
+     * Überprüft, den Webhook von Github (überprüft den Hash) und ob es sich um den "richtigen" Branch handelt.
+     * Wenn ja, wird eine Semaphor-Datei geschrieben, die dazu führt, dass der cron-Job (und damit das Deployment)
      * ausgeführt wird.
+     *
+     * @param Request $request
+     * @return void
      */
     public function __invoke(Request $request)
     {
@@ -26,8 +29,8 @@ class GitDeployController
 
         /*
          * Semaphor in die Projekt-Root schreiben.
-         * Dieser wird dann vom Shell-Script - dass jede Minute aufgerufen wird - gefunden.
-         * Das Shell Script führt dann die Restliche arbeit aus.
+         * Dieser wird dann vom Shell-Script (dass jede Minute aufgerufen wird) gefunden.
+         * Das Shell-Script führt dann die restliche Arbeit aus.
          */
         file_put_contents(base_path('/git-deploy.sem'), "-");
     }

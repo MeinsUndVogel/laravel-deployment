@@ -1,6 +1,6 @@
 {
     "name": "muv/laravel-deployment",
-    "description": "Deployment über gitHub bei Shared Hostern wie z.B. Mittwald",
+    "description": "Deployment über GitHub in Shared-Hosting wie z.B. Mittwald",
     "keywords": [
         "Meins und Vogel",
         "laravel",
@@ -11,6 +11,11 @@
         {
             "name": "Oliver Vogel",
             "email": "o.vogel@muv.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Jonas Barth",
+            "email": "j.barth@muv.com",
             "role": "Developer"
         }
     ],
@@ -25,7 +30,6 @@
         "larastan/larastan": "^2.9",
         "orchestra/testbench": "^9.0.0||^8.22.0",
         "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-arch": "^2.7",
         "pestphp/pest-plugin-laravel": "^2.3",
         "phpstan/extension-installer": "^1.3",
         "phpstan/phpstan-deprecation-rules": "^1.1",
@@ -33,14 +37,12 @@
     },
     "autoload": {
         "psr-4": {
-            "muv\\LaravelDeployment\\": "src/",
-            "muv\\LaravelDeployment\\Database\\Factories\\": "database/factories/"
+            "muv\\LaravelDeployment\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "muv\\LaravelDeployment\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "muv\\LaravelDeployment\\Tests\\": "tests/"
         }
     },
     "scripts": {

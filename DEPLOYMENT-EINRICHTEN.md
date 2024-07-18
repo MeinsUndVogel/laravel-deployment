@@ -1,18 +1,20 @@
-Da wir aktuell unsere Projekte beim Mittwald hosten, ist diese Readme aktuell auf Mittwald
-ausgelegt und muss eventuell bei anderen Hostern angepasst werden.
+# Voraussetzungen
 
 Wir gehen bei der folgenden Beschreibung davon aus, dass das Projekt bereits bei Mittwald eingerichtet ist.
-Der Github-Client und Open SSH wurden dabei bereits von Mittwald vollautomatisch installiert, sodass 
-wir auf diese Befehle ohne weitere Vorarbeiten zugreifen können.
+Die folgenden Programme wurden bereits installiert und es kann ohne Probleme darauf zugegriffen werden.
 
-# 1. Prinzipielle Vorgehensweise
+- Composer
+- GIT
+- NPM
+
+# Prinzipielle Vorgehensweise
 
 Das vollautomatische Deployment besteht aus zwei Teilen:
 
 * Einer Laravel-Route, deren URL von Github per Webhook immer dann aufgerufen wird, wenn etwas in das Repository
   gepushed wird. Diese Route legt dann eine Semaphor-Datei an. Mehr kann sie leider nicht tun, da sie sich sonst selbst
   beim Update den Boden unter den Füßen wegziehen würde.
-* Einem cron-Job, der jede Minute läuft und der - sofern er die Semaphor-Datei findet - das Deployment vom
+* Einem Cronjob, der jede Minute läuft und der - sofern er die Semaphor-Datei findet - das Deployment vom
   Github-Repository anstößt.
 
 # 1. SSH-Key einrichten
@@ -27,20 +29,23 @@ Dabei muss natürlich eine geeignete E-MAil-Adresse verwendet werden.
 Die Frage `Enter file in which to save the key (...)` wird mit dem gewünschten Verzeichnis und
 einem passenden Key-Namen beantwortet. Z.B. `/.ssh/git_deploy_key_<repository-name>`.
 Die Frage `Enter passphrase` wird mit Enter beantwortet (= KEINE Passphrase).
-Dies ist notwendig, da bei Eingabe einer Passphrase diese bei jeder Verwendung des Keys eingegeben werden muss, was e
-inen automatisierten Aufruf aus einem Script heraus unmöglich macht.
+Dies ist notwendig, da bei Eingabe einer Passphrase diese bei jeder Verwendung des Keys eingegeben werden muss, was einen automatisierten Aufruf aus einem Script heraus unmöglich macht. Zu beachten ist, dass nur der User Zugriff auf den Private-Key hat. Dies kann ggf. mit 
+```bash
+chmod 600 git_deploy_key
+``` 
+durchgeführt werden.
 
 ## 1.2 SSH-Key aktivieren
 
-Als nächstes muss das Repository mit dem erzeugten SSH-Key verknüpft werden, damit OpenSSH weiß, welchen Key es beim
+Als Nächstes muss das Repository mit dem erzeugten SSH-Key verknüpft werden, damit OpenSSH weiß, welchen Key es beim
 Verbindungsaufbau mit Github verwenden soll.
-Diese Datei heißt `/.ssh/config` und besitzt folgenden Inhalt:
+Diese Datei heißt `~/.ssh/config` und besitzt folgenden Inhalt:
 (Dabei muss <repository-name> bzw. <key-name> durch die tatsächlichen Werte ersetzt werden.)
 
 ```txt
 Host github.com-<repository-name>
         Hostname github.com
-        IdentityFile=/.ssh/<key-name>
+        IdentityFile=~/.ssh/<key-name>
 ```
 
 ## 1.3 SSH-Key als Deployment-Key bei Github hinterlegen
@@ -59,8 +64,8 @@ Zuerst innerhalb des SSH-Terminals in den App-Ordner wechseln
 `cd /home/<projekt-Id>/html/<app-id>`
 Dann mit
 `git clone git@github.com-<repository-name>:<repository> .`
-das Projekt initial klonen (Den "." am Ende nicht vergessen, da dieser dafür sorgt, dass das Projekt ins
-aktuelle Verzeichnis geklont wird.
+das Projekt initial klonen (den "." am Ende nicht vergessen, da dieser dafür sorgt, dass das Projekt ins
+aktuelle Verzeichnis geklont wird).
 
 `github.com-<repository-name>` entspricht dabei dem Eintrag, der in 1.2 SSH-Key aktivieren als `Host` angegeben wurde.
 
@@ -108,7 +113,6 @@ Das gewünschte Secret eingeben (Zufalls-String) und für den nächsten Schritt 
 `SSL verification` auf `Enable SSL verification` setzen.
 `Which events would you like to trigger this webhook?` auf `Just the push event.` setzen.
 
-
 ## 3.2 .env Datei
 
 Das gemerkte Secret in der `.env`-Datei unter `GITHUB_WEBHOOK_SECRET="..."` eintragen.
@@ -124,7 +128,8 @@ D.h. `Befehl ausführen` `Interpteter = Bash`
 Ein push auf den gewünschten Branch muss nun die Semaphor-Datei anlegen.
 Der cronjob muss dann deployen.
 
-# 5. Mehr Info...
+# 5. Mehr Infos...
+
 https://docs.github.com/de/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
 https://docs.github.com/de/authentication/connecting-to-github-with-ssh/managing-deploy-keys
