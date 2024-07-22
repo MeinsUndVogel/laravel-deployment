@@ -1,9 +1,8 @@
 # Automatisches Deployment mit GitHub
 
-[![Latest Stable Version](http://poser.pugx.org/muv/laravel-deployment/v)](https://packagist.org/packages/muv/laravel-deployment)
-[![Latest Unstable Version](http://poser.pugx.org/muv/laravel-deployment/v/unstable)](https://packagist.org/packages/muv/laravel-deployment)
-[![License](http://poser.pugx.org/muv/laravel-deployment/license)](https://packagist.org/packages/muv/laravel-deployment)
-[![PHP Version Require](http://poser.pugx.org/muv/laravel-deployment/require/php)](https://packagist.org/packages/muv/laravel-deployment)
+[![Latest Stable Version](https://poser.pugx.org/muv/laravel-deployment/v/stable.svg)](https://packagist.org/packages/muv/laravel-deployment)
+[![Latest Unstable Version](https://poser.pugx.org/muv/laravel-deployment/v/unstable.svg)](https://packagist.org/packages/muv/laravel-deployment)
+[![License](https://poser.pugx.org/muv/laravel-deployment/license.svg)](https://packagist.org/packages/muv/laravel-deployment)
 
 Mit diesem Package kann in einem Laravel Projekt automatisch ein Update bei Push-Events im GitHub Repository
 durchgeführt werden.
