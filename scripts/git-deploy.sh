@@ -11,7 +11,7 @@ cd $SCRIPT_PATH
 # Dabei eventuell gefundenen " löschen ("staging" => staging)
 # UND auch noch die Zeilenumbrüche entfernen.
 ########################################################################################################################
-BRANCH_KEY="GITHUB_BRANCH"
+BRANCH_KEY="DEPLOYMENT_BRANCH"
 BRANCH=$(awk -F '=' "/^$BRANCH_KEY/ {gsub(/[\"]/, \"\", \$2); print \$2}" ".env" | tr -d '\n' | tr -d '\r')
 
 ########################################################################################################################
@@ -33,9 +33,9 @@ if [ ! -f git-deploy.sem ]; then
 fi
 
 #
-# TEST!!!
+# Alle folgenden Befehle in Log-Datei schreiben.
 #
-exec > alle_befehle.txt 2>&1
+exec > deployment.log 2>&1
 
 #
 # Die Semaphor-Datei sofort löschen, damit dieses Script auf keinen Fall noch einmal läuft.
