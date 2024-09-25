@@ -31,20 +31,21 @@ Diesen können wir erstellen, indem wir eine SSH-Sitzung auf dem gewünschten Se
 Befehl ausführen:
 
 ```bash
-ssh-keygen -t ed25519 -C "servername"
+ssh-keygen -t ed25519 -C <repository-name>
 ```
 
+- `<repository-name>` ist der Name des Repositorys, welches später auf dem Server deployed werden soll, 
+  also z.B. `muv-webshop`.
 - Die Frage `Enter file in which to save the key (...)` wird mit dem gewünschten Verzeichnis und
   einem passenden Key-Namen beantwortet. Z.B. `~/.ssh/deploy_key_<repository-name>`.
 - `Enter passphrase` wird mit Enter beantwortet (= KEINE Passphrase).
-  Dies ist notwendig, da bei Eingabe einer Passphrase diese bei jeder Verwendung des Keys eingegeben werden muss, was
-  einen automatisierten Aufruf aus einem Script heraus unmöglich macht.
+  Dies ist notwendig, da bei Eingabe einer Passphrase diese bei jeder Verwendung des Keys eingegeben werden muss, was  einen automatisierten Aufruf aus einem Script heraus unmöglich macht.
 
 Zu beachten ist, dass nur der aktuelle User
 Zugriff auf den Private-Key haben darf.
 
 ```bash
-chmod 600 deploy_key
+chmod 600 <repository-name>
 ```
 
 ## 1.2 SSH-Key aktivieren
@@ -55,7 +56,7 @@ Diese Datei heißt `~/.ssh/config` und besitzt folgenden Inhalt:
 (Dabei muss <repository-name> bzw. <deploy_key-path> durch die tatsächlichen Werte ersetzt werden.)
 
 ```txt
-Host github.com
+Host github.com-<repository-name>
     HostName github.com
     IdentityFile <deploy_key_path>
 ```
@@ -75,16 +76,17 @@ Der Haken `Allow write access` darf ***NICHT*** gesetzt werden, da nur Lesezugri
 
 Projekt initial klonen:
 
+Folgenden Befehl innerhalb des leeren Projekt-Ordners auf dem Server ausführen.
+
 ```bash
-git clone git@github.com-<repository-name>:<organisation>/<repository-name>.git
+git clone git@github.com-<repository-name>:<organisation>/<repository-name>.git .
 ```
 
-`github.com-<repository-name>` entspricht dabei dem Eintrag, der in [1.2](#12-ssh-key-aktivieren) als `Host` angegeben
-wurde.
+`github.com-<repository-name>` entspricht dabei dem Eintrag, der in [1.2](#12-ssh-key-aktivieren) als `Host` angegeben wurde.
 
 ## 2.2 Projekt einrichten
 
-Dazu muss zuerst die Datei '.env' erstellt und mit den "richtigen Werten" gefüllt werden. Die benötigten Werte befinden
+Um das Projekt einzurichten, muss zuerst die Datei '.env' erstellt und mit den "richtigen Werten" gefüllt werden. Die benötigten Werte befinden
 sich in der `.env.example`.
 
 ```bash
