@@ -1,6 +1,8 @@
 <?php
-// Die Route, die durch GitHub bei Push-Events im Repository aufgerufen wird
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use muv\LaravelDeployment\Http\Controllers\GitDeployController;
 
-Route::post('/git-deploy', GitDeployController::class)->withoutMiddleware(ValidateCsrfToken::class);
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Support\Facades\Route;
+use muv\LaravelDeployment\Http\Controllers\DeployController;
+
+// Call this route with a GitHub webhook for push events
+Route::post('/git-deploy', DeployController::class)->withoutMiddleware(ValidateCsrfToken::class);
