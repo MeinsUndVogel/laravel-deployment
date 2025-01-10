@@ -70,9 +70,19 @@ $PHP artisan config:cache
 $PHP artisan route:clear
 $PHP artisan route:cache
 $PHP artisan view:clear
-$PHP artisan view:cache
-$PHP artisan filament:clear-cached-components
-$PHP artisan filament:cache-components
+
+# ACHTUNG!
+# artisan view:cache darf AUF KEINEN FALL ausgeführt werden, wenn LIVEWIRE verwendet wird!
+# Der Grund: Wenn LIVEWIRE den Template-Cache erstellt, dann compiliert es Kommentare mit rein, die es unbedingt
+# benötigt, um Inhalte zu morphen. Wenn wir aber LARAVEL den Template-Cache compilieren lassen, dann weiß Laravel
+# nichts von diesen Markern und macht sie nicht mit rein. Dann findet LIVEWIRE diese Kommentare (Marker) nicht und
+# kommt durcheinander. D.h. er "zerhaut" dann die View!
+# Deshalb KEIN $PHP artisan view:cache
+
+# Dies wird nur für Filament Projekte benötigt
+# $PHP artisan filament:clear-cached-components
+# $PHP artisan filament:cache-components
+
 $PHP artisan up
 
 ####################################################################################################
