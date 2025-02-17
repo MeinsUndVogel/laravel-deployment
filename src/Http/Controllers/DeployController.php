@@ -27,9 +27,20 @@ class DeployController
             return response('Invalid Signature', 403);
         }
 
+		// Verify the Content-Type (wrong content-type = no data)
+		$contentType = $request->header('Content-Type');
+		if (Str::lower($contentType) !== 'application/json') {
+            return response('Invalid Content-Type. (application/json needed)', 403);
+        }
+			
+
         // Ignore if the branch is not the expected one
         if (!Str::endsWith($request->input('ref', ''), '/' . config('deployment.branch'))) {
-            return response('Request received for a non-deployment branch. No action taken.', 200);
+            return response('Request received for a non-deployment branch(' .
+				$request->input('ref', '').
+				'/' .
+				config('deployment.branch').		
+				') No action taken.', 200);
         }
 
         /*
