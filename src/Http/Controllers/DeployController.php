@@ -44,22 +44,25 @@ class DeployController
         }
 
         /*
-         * Write a semaphore to the project root.
-         * This will then be detected by a shell script (which is called every minute with cron)
-         * and then performs the deployment tasks.
+         * Starting the deployment script.
+         * The script needs to be "outside" the Laravel-Project to not destroy a file which already executes.
          */
-        $semaphoreFilePath = base_path('/git-deploy.sem');
+        $scriptFilePath = base_path('/git-deploy.php');
         try {
-            file_put_contents($semaphoreFilePath, "-");
+            // We run asynchronous
+            if (PHP_OS_FAMILY === 'Windows') {
+                // Windows
+                exec("start php {$scriptFilePath}");
+            } else {
+                // Linux/Unix/macOS
+                exec("php {$scriptFilePath} > /dev/null 2>&1 &");
+            }
 
-            return response('Deployment initiated.', 200);
+            return response('Deployment started.', 200);
         } catch (Exception $e) {
-            Log::error('Error writing the semaphore file.', [
-                'error' => $e->getMessage(),
-                'file_path' => $semaphoreFilePath,
-            ]);
+            Log::error('Error starting Deployment.');
 
-            return response('Error writing the semaphore file.', 500);
+            return response('Error starting Deployment.', 500);
         }
     }
 }

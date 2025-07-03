@@ -24,8 +24,6 @@ class LaravelDeploymentCommand extends Command
             }
         }
 
-        chmod(base_path(path: 'git-deploy.sh'), permissions: 0755);
-
         $this->comment('All done');
         return self::SUCCESS;
     }

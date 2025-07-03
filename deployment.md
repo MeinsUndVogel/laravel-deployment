@@ -12,13 +12,13 @@
 
 ## Prinzipielle Vorgehensweise
 
-Das vollautomatische Deployment besteht aus zwei Teilen:
+Das vollautomatische Deployment besteht im Wesentlichen aus einer Laravel-Route, deren URL von GitHub per Webhook immer dann aufgerufen wird, wenn etwas in das Repository
+gepushed wird. 
 
-* Einer Laravel-Route, deren URL von GitHub per Webhook immer dann aufgerufen wird, wenn etwas in das Repository
-  gepushed wird. Diese Route legt dann eine Semaphor-Datei an. Mehr kann sie leider nicht tun, da sie sich sonst selbst
-  beim Update den Boden unter den Füßen wegziehen würde.
-* Einem Cronjob, der jede Minute läuft und der - sofern er die Semaphor-Datei findet - das Deployment vom
-  GitHub-Repository anstößt.
+Diese Route startet dann parallel (asynchron) das Deployment-Script.
+Es wird deshalb asynchron gestartet, damit
+ * Schnell eine Antwort an GitHub gesendet wird (das Ausführen der Migrations kann je nach Änderungen auch mal länger laufen)
+ * Verhindert wird, dass das Deployment script sich selbst verändert, während es läuft (der Controller ist Teil einer laufenden Laravel-App, das Deployment-Script nicht).
 
 Zusätzlich ist es nötig, Git, Composer und NPM, installiert zu haben
 
@@ -101,7 +101,7 @@ npm install
 npm run build
 
 php artisan key:generate --force
-php artisan migrate --force
+php artisan migrate --force --seed
 php artisan storage:link
 php artisan optimize
 # php artisan filament:cache-components
@@ -134,20 +134,10 @@ GITHUB_WEBHOOK_SECRET=secret
 DEPLYOMENT_BRANCH=main
 ```
 
-## 3.3 Cronjob
-
-Einen Cronjob anlegen, der **jede Minute** ausgeführt wird und die Datei [git-deploy](git-deploy.sh) aufruft:
-
-```cronexp
-# GitHub Deplyoment
-* * * * * username /project-path/git-deploy.sh
-```
-
 # 4. Testen
 
-Ein Push auf den gewünschten Branch muss nun die Semaphor-Datei anlegen.
-Der Cronjob muss dann deployen.
-
+Ein Push auf den gewünschten Branch muss nun das Deployment starten und es muss eine Datei deployment.log angelegt werden.
+Falls es Probleme geben sollte, kann dies in GitHub beim Response des Webhooks eingesehen werden.
 # 5. Weitere Informationen
 
 - [GitHub SSH](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
