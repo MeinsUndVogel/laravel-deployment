@@ -27,29 +27,35 @@ class DeployController
             return response('Invalid Signature', 403);
         }
 
-		// Verify the Content-Type (wrong content-type = no data)
-		$contentType = $request->header('Content-Type');
-		if (Str::lower($contentType) !== 'application/json') {
+        // Verify the Content-Type (wrong content-type = no data)
+        $contentType = $request->header('Content-Type');
+        if (Str::lower($contentType) !== 'application/json') {
             return response('Invalid Content-Type. (application/json needed)', 403);
         }
-			
+
 
         // Ignore if the branch is not the expected one
         if (!Str::endsWith($request->input('ref', ''), '/' . config('deployment.branch'))) {
             return response('Request received for a non-deployment branch(' .
-				$request->input('ref', '').
-				'/' .
-				config('deployment.branch').		
-				') No action taken.', 200);
+                $request->input('ref', '').
+                '/' .
+                config('deployment.branch').
+                ') No action taken.', 200);
         }
 
-        /*
-         * Starting the deployment script.
-         * The script needs to be "outside" the Laravel-Project to not destroy a file which already executes.
-         */
-        $scriptFilePath = base_path('/git-deploy.php');
         try {
-            // We run asynchronous
+            // Create the semaphore file to trigger the cron job
+            if (config('deployment.use-cronjob')) {
+                file_put_contents(base_path('/git-deploy.sem'), '-');
+
+                return response('Deployment initiated.', 200);
+            }
+
+            /*
+             * Starting the deployment script asynchronous
+             * The script needs to be "outside" the Laravel-Project to not destroy a file which already executes.
+             */
+            $scriptFilePath = base_path('/git-deploy.php');
             if (PHP_OS_FAMILY === 'Windows') {
                 // Windows
                 exec("start php {$scriptFilePath}");
@@ -62,7 +68,7 @@ class DeployController
         } catch (Exception $e) {
             Log::error('Error starting Deployment.');
 
-            return response('Error starting Deployment.', 500);
+            return response('Error starting Deployment: '.$e->getMessage(), 500);
         }
     }
 }
