@@ -131,7 +131,7 @@ vom Main Branch abweicht.
 
 ```dotenv
 GITHUB_WEBHOOK_SECRET=secret
-DEPLYOMENT_BRANCH=main
+DEPLOYMENT_BRANCH=main
 ```
 
 # 4. Testen
