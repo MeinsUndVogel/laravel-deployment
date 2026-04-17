@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$projectRoot = getcwd();
+$source = dirname(__DIR__).'/stubs/deploy.php';
+$destinationDir = $projectRoot.'/public';
+$destination = $destinationDir.'/deploy.php';
+
+if (! is_dir($destinationDir)) {
+    mkdir($destinationDir, 0755, true);
+}
+
+if (file_exists($destination)) {
+    echo 'Error: Target file already exists'.PHP_EOL;
+    exit(1);
+}
+
+if (copy($source, $destination)) {
+    echo 'File successfully published'.PHP_EOL;
+} else {
+    echo 'Error: Failed to copy file'.PHP_EOL;
+    exit(1);
+}

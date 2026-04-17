@@ -2,6 +2,6 @@ parameters:
     level: max
     paths:
         - src
-        - scripts
+        - stubs
 
     reportUnmatchedIgnoredErrors: true
