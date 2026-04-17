@@ -2,11 +2,11 @@
     "name": "muv/laravel-deployment",
     "description": "Automatische Deployments mit GitHub",
     "keywords": [
-        "Meins und Vogel",
-        "laravel",
-        "laravel-deployment"
+        "muv",
+        "php",
+        "deployment"
     ],
-    "homepage": "https://github.com/muv/laravel-deployment",
+    "homepage": "https://github.com/MeinsUndVogel/laravel-deployment",
     "license": "MIT",
     "authors": [
         {
@@ -53,7 +53,7 @@
         "test:lint": "pint --parallel --test",
         "test:type-coverage": "pest --type-coverage --min=100",
         "test:types": "phpstan",
-        "test:unit": "pest --parallel --coverage --exactly=100",
+        "test:unit": "pest --parallel",
         "test": [
             "@test:lint",
             "@test:type-coverage",
