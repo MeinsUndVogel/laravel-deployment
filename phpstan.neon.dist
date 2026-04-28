@@ -4,4 +4,5 @@ parameters:
         - src
         - stubs
 
+    phpVersion: 80400
     reportUnmatchedIgnoredErrors: true

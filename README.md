@@ -49,11 +49,11 @@ Bei jedem Push zum konfigurierten Branch läuft das Deployment im Hintergrund:
 2. Lädt `deploy_pre.php` (falls vorhanden, kann Standard-Befehle überschreiben)
 3. Führt die Standard-Deployment-Befehle aus:
    ```sh
-   git reset --hard
-   git pull
    php artisan down
-   composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress
-   npm ci --ignore-scripts
+   git reset --hard
+   git pull   
+   composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress --quiet
+   npm ci --omit=dev --ignore-scripts
    npm run build
    php artisan optimize
    php artisan migrate --force
@@ -86,7 +86,7 @@ declare(strict_types=1);
 return [
     'git reset --hard',
     'git pull',
-    'composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress',
+    'composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress --quiet',
 ];
 ```
 
