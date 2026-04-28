@@ -48,6 +48,10 @@
             "pestphp/pest-plugin": true
         }
     },
+    "bin": [
+        "bin/publish-deploy",
+        "bin/run-deploy.php"
+    ],
     "scripts": {
         "lint": "pint --parallel",
         "test:lint": "pint --parallel --test",
