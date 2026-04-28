@@ -63,7 +63,7 @@ Bei jedem Push zum konfigurierten Branch läuft das Deployment im Hintergrund:
 5. Lädt `deploy_post.php` (falls vorhanden)
 
 Der Webhook antwortet sofort mit 200 OK; das Deployment läuft asynchron im Hintergrund. Alle Aktivitäten werden in
-`deployment.log` protokolliert.
+`storage/logs/deployment.log` protokolliert.
 
 ### Hooks anpassen
 
@@ -80,15 +80,13 @@ tar -czf backup/$(date +%Y%m%d_%H%M%S).tar.gz .
 
 ```php
 <?php
+
+declare(strict_types=1);
+
 return [
     'git reset --hard',
     'git pull',
-    'composer install --no-interaction',
-    'npm ci',
-    'php artisan down',
-    'php artisan migrate --force',
-    'npm run build',
-    'php artisan up',
+    'composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress',
 ];
 ```
 
@@ -103,6 +101,9 @@ curl -X POST https://monitoring.example.com/alert -d "status=deployed"
 
 ```php
 <?php
+
+declare(strict_types=1);
+
 file_put_contents('deployment-log.txt', "Deployment erfolgreich\n", FILE_APPEND);
 ```
 

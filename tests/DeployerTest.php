@@ -284,6 +284,8 @@ describe('verifyWebhook', function () {
 describe('executeDeployment', function () {
     beforeEach(function () {
         $this->dir = makeTempDir();
+        mkdir($this->dir.'/storage/logs', 0777, true);
+        $this->logFile = $this->dir.'/storage/logs/deployment.log';
         // Snapshot the static $commands so each test starts from the same state
         $this->originalCommands = (new ReflectionProperty(Deployer::class, 'commands'))->getValue();
     });
@@ -291,32 +293,34 @@ describe('executeDeployment', function () {
     afterEach(function () {
         // Restore $commands modified by deploy_pre.php overrides
         (new ReflectionProperty(Deployer::class, 'commands'))->setValue(null, $this->originalCommands);
+        removeTempDir($this->dir.'/storage/logs');
+        removeTempDir($this->dir.'/storage');
         removeTempDir($this->dir);
     });
 
     it('creates a deployment.log file', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo ok"];');
         callPrivate('executeDeployment', $this->dir);
-        expect(file_exists($this->dir.'/deployment.log'))->toBeTrue();
+        expect(file_exists($this->logFile))->toBeTrue();
     });
 
     it('runs commands overridden by deploy_pre.php', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo custom_command_ran"];');
         callPrivate('executeDeployment', $this->dir);
-        expect(file_get_contents($this->dir.'/deployment.log'))->toContain('custom_command_ran');
+        expect(file_get_contents($this->logFile))->toContain('custom_command_ran');
     });
 
     it('stops execution after the first failing command', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["false", "echo should_not_run"];');
         callPrivate('executeDeployment', $this->dir);
-        expect(file_get_contents($this->dir.'/deployment.log'))->not->toContain('should_not_run');
+        expect(file_get_contents($this->logFile))->not->toContain('should_not_run');
     });
 
     it('runs deploy_pre.sh before the main commands', function () {
         file_put_contents($this->dir.'/deploy_pre.sh', "echo pre_hook_ran\n");
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo main_command"];');
         callPrivate('executeDeployment', $this->dir);
-        $log = file_get_contents($this->dir.'/deployment.log');
+        $log = file_get_contents($this->logFile);
         expect($log)->toContain('pre_hook_ran')
             ->and($log)->toContain('main_command');
     });
@@ -325,27 +329,27 @@ describe('executeDeployment', function () {
         file_put_contents($this->dir.'/deploy_pre.sh', "exit 1\n");
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo should_not_run"];');
         callPrivate('executeDeployment', $this->dir);
-        expect(file_get_contents($this->dir.'/deployment.log'))->not->toContain('should_not_run');
+        expect(file_get_contents($this->logFile))->not->toContain('should_not_run');
     });
 
     it('runs deploy_post.sh after the main commands', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo ok"];');
         file_put_contents($this->dir.'/deploy_post.sh', "echo post_hook_ran\n");
         callPrivate('executeDeployment', $this->dir);
-        expect(file_get_contents($this->dir.'/deployment.log'))->toContain('post_hook_ran');
+        expect(file_get_contents($this->logFile))->toContain('post_hook_ran');
     });
 
     it('runs deploy_post.php after the main commands', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo ok"];');
         file_put_contents($this->dir.'/deploy_post.php', '<?php echo "post_php_ran";');
         callPrivate('executeDeployment', $this->dir);
-        expect(file_get_contents($this->dir.'/deployment.log'))->toContain('post_php_ran');
+        expect(file_get_contents($this->logFile))->toContain('post_php_ran');
     });
 
     it('ignores non-string entries returned by deploy_pre.php', function () {
         file_put_contents($this->dir.'/deploy_pre.php', '<?php return ["echo valid", 42, null, "echo also_valid"];');
         callPrivate('executeDeployment', $this->dir);
-        $log = file_get_contents($this->dir.'/deployment.log');
+        $log = file_get_contents($this->logFile);
         expect($log)->toContain('valid')
             ->and($log)->toContain('also_valid');
     });

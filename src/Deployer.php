@@ -75,7 +75,10 @@ final class Deployer
 
         // Redirecting output and appending '&' is required to detach the child process,
         // allowing the current PHP script to terminate and respond to the HTTP request immediately.
-        $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg($workerPath).' > /dev/null 2>&1 &';
+        $command = sprintf(
+            'php %s > /dev/null 2>&1 &',
+            escapeshellarg($workerPath)
+        );
         exec($command);
     }
 
@@ -88,12 +91,16 @@ final class Deployer
      */
     private static function executeDeployment(string $projectRoot): void
     {
-        $logFile = $projectRoot.'/deployment.log';
+        $logFile = $projectRoot.'/storage/logs/deployment.log';
 
         // Using wb mode to truncate the file on start, ensuring we only keep logs of the latest run.
         $handle = fopen($logFile, 'wb');
         if ($handle === false) {
-            return;
+            // Last-resort fallback so a permissions issue never causes a completely silent failure.
+            $handle = fopen(sys_get_temp_dir().'/deployment.log', 'wb');
+            if ($handle === false) {
+                return;
+            }
         }
 
         $preSh = $projectRoot.'/deploy_pre.sh';
