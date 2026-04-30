@@ -17,9 +17,19 @@ if (file_exists($destination)) {
     exit(1);
 }
 
-if (copy($source, $destination)) {
-    echo 'File successfully published'.PHP_EOL;
-} else {
-    echo 'Error: Failed to copy file'.PHP_EOL;
+if (! copy($source, $destination)) {
+    echo 'Error: Failed to copy deploy.php'.PHP_EOL;
     exit(1);
 }
+
+$mdSource = dirname(__DIR__).'/deployment.md';
+$mdDestination = $projectRoot.'/deployment.md';
+
+if (file_exists($mdDestination)) {
+    echo 'Warning: deployment.md already exists, skipping'.PHP_EOL;
+} elseif (! copy($mdSource, $mdDestination)) {
+    echo 'Error: Failed to copy deployment.md'.PHP_EOL;
+    exit(1);
+}
+
+echo 'Files successfully published'.PHP_EOL;
